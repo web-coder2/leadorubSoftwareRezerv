@@ -44,7 +44,13 @@
                 </div>
             </template>
             <template #default="{ row }">
-                <span class="header-ellipsis">{{ row.name }}</span>
+                <div class="login-container">
+                    <img v-if="row.avatar" class="user-avatar" :src="`${apiBase}public/avatars/${row.avatar}`">
+                    <el-icon v-if="!row.avatar" class="user-icon">
+                        <User class="icon-self" />
+                    </el-icon>
+                    <span class="header-ellipsis">{{ row.name }}</span>
+                </div>
             </template>
         </el-table-column>
         <!-- <el-table-column prop="email" label="Логин"></el-table-column> -->
@@ -94,6 +100,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-left: 10px;
 }
 
 .leadCarder {
@@ -108,6 +115,41 @@
     text-wrap: wrap;
 }
 
+.avatar-preview {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+  
+.avatar-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+  
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+  
+.user-icon {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.icon-self {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    float: left !important;
+}
+
 </style>
 
 <script>
@@ -118,7 +160,7 @@
 
     dayjs.locale('ru')
 
-    import { ArrowRight, ArrowDown } from '@element-plus/icons-vue'
+    import { ArrowRight, ArrowDown, User } from '@element-plus/icons-vue'
 
     export default {
         data() {
@@ -137,12 +179,14 @@
                 modalToShowLeads: false,
                 leadsToRequireShow: [],
                 leadorubToShowModal: null,
-                totalSalaryNewToLeads: 0
+                totalSalaryNewToLeads: 0,
+                apiBase: null
             }
         },
         components: {
             ArrowRight,
-            ArrowDown
+            ArrowDown,
+            User
         },
         methods: {
             async getSalaryData() {
@@ -227,6 +271,8 @@
         async beforeMount() {
 
             this.isMobile = window.innerWidth > 480 ? false : true
+
+            this.apiBase = this.$store.getters['getApiBaseURL']
 
             await this.getSalaryData()
             await this.getUserStats()

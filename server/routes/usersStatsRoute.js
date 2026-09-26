@@ -7,11 +7,14 @@ const dotenv = require('dotenv')
 const { Router } = require('express')
 
 const usersStatsModel = require('../models/usersStats.js')
+const usersModel = require('../models/usersModel.js')
 const bonusesModel = require('../models/bonusesModel.js')
 
 const { setUsersStatsToDB } = require('../crones/setUsersStats.js')
 const { getFullMonthClear } = require('../services/salaryService.js')
 const { setTransfersToDB } = require('../crones/setTransfers.js')
+const { upsertBonusDataByUsers } = require('../crones/setBonuses.js')
+
 
 const router = Router()
 
@@ -28,6 +31,10 @@ router.get('/api/salary/updateInfo', async (req, res) => {
             let resultByUpdateStats = await setTransfersToDB(gte, gte)
         } else if (mode === 'updateSalary') {
             let resultByUpdateStats = await setUsersStatsToDB(gte, gte)
+        } else if (mode === 'updateBonuses') {
+            console.log('update bonuses blyyat')
+            let resultByUpdateStats = await upsertBonusDataByUsers(dayjs(gte).endOf('week').format('YYYY-MM-DD'))
+            console.log('azazazaza')
         }
 
 
@@ -113,6 +120,7 @@ router.get('/api/salary/get', async (req, res) => {
             }
         })
 
+        const usersArrayList = await usersModel.find()
 
         const bonusesData = await bonusesModel.find({
             bonusDate: {
@@ -175,27 +183,32 @@ router.get('/api/salary/get', async (req, res) => {
             let bonusByDate = getBonusByDate(item)
             let userIdString = item.user.toString()
             let userName = item.name
+            let userEmail = item.email
 
             let countTargetsAndUnique = 0
             let countTargetsAndUnUnique = 0
 
+            // TODO тут лучше исопльзвоать useEmail для агрегации потмоу что могут
+            // TODO создать дублированого юзера и будут дублированые в зарплатной 
+            // TODO а так просумируется как один юзер если использвоать userEmail
+
             // if (resultObject[item.name]) {
-            if (resultObject[userIdString]) {
-                // resultObject[userIdString].countCallsWithProfile += item.countCallsWithProfile
-                resultObject[userIdString].countCalls += item.countCalls || 0
-                resultObject[userIdString].countCallsWithProfile += 0
-                resultObject[userIdString].countLeads += item.countLeads
-                resultObject[userIdString].countTargets += item.countTargets
-                resultObject[userIdString].countHolds += item.countHolds
-                resultObject[userIdString].sumHold += item.sumHold
-                resultObject[userIdString].salary += Math.round(item.salary)
-                // resultObject[userIdString].scriptBonus += bonusByDate
-                resultObject[userIdString].clear += item.clear
-                resultObject[userIdString].brokerSalary += item.brokerSalary
-                resultObject[userIdString].salaryToLeads += item.salaryToLeads
+            if (resultObject[userEmail]) {
+                // resultObject[userEmail].countCallsWithProfile += item.countCallsWithProfile
+                resultObject[userEmail].countCalls += item.countCalls || 0
+                resultObject[userEmail].countCallsWithProfile += 0
+                resultObject[userEmail].countLeads += item.countLeads
+                resultObject[userEmail].countTargets += item.countTargets
+                resultObject[userEmail].countHolds += item.countHolds
+                resultObject[userEmail].sumHold += item.sumHold
+                resultObject[userEmail].salary += Math.round(item.salary)
+                // resultObject[userEmail].scriptBonus += bonusByDate
+                resultObject[userEmail].clear += item.clear
+                resultObject[userEmail].brokerSalary += item.brokerSalary
+                resultObject[userEmail].salaryToLeads += item.salaryToLeads
             } else {
                 // resultObject[item.name] = {
-                resultObject[userIdString] = {
+                resultObject[userEmail] = {
                     // countCallsWithProfile: item.countCallsWithProfile,
                     name: item.name,
                     email: item.email,
@@ -263,6 +276,14 @@ router.get('/api/salary/get', async (req, res) => {
             let lidorubObjectKey = aggregatedBonusesArray.find((user) => {
                 return user.email === item.email
             })
+
+            let userObjectKey = usersArrayList.find((user) => {
+                return user.email === item.email
+            })
+
+            if (userObjectKey) {
+                item.avatar = userObjectKey.avatar
+            }
 
             if (lidorubObjectKey) {
                 item.scriptBonus = lidorubObjectKey.sumBonus

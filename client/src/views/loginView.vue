@@ -64,7 +64,6 @@
     width: 300px;
     padding: 30px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    background-color: #fff;
     border-radius: 10px;
     display: flex;
     flex-direction: column;

@@ -4,8 +4,10 @@
 
   <div v-if="isAdmin">
     <el-input :disabled="isLoading" style="width: 50%;" v-model="gte" type="date"></el-input><br>
+    
     <el-button :disabled="isLoading" style="margin-top: 10px;" type="success" plain @click="startUpdateUsersStats('updateSalary')">Обновить зарплатную</el-button>
     <el-button :disabled="isLoading" style="margin-top: 10px;" type="success" plain @click="startUpdateUsersStats('updateLeads')">Обновить лиды</el-button>
+    <el-button :disabled="isLoading" style="margin-top: 10px;" type="success" plain @click="startUpdateUsersStats('updateBonuses')">Обновить бонусы</el-button>
   </div>
 
 </template>

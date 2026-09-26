@@ -108,8 +108,8 @@ async function setUsersStatsToDB(gte, lte) {
 
 
 async function setUsersStatsByManyDays() {
-    const startDate = '2026-06-08'
-    const endDate = '2026-06-14'
+    const startDate = '2026-07-02'
+    const endDate = '2026-07-18'
 
     const totalDays = dayjs(endDate).diff(dayjs(startDate), 'day') + 1
 

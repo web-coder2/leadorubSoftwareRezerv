@@ -23,9 +23,15 @@ const router = createRouter({
       meta: { requiresAuth: true, onlyAdmin: false }
     },
     {
+      path: '/leadsNew',
+      name: 'leadsNew',
+      component: () => import('../views/LeadsNewView.vue'),
+      meta: { requiresAuth: true, onlyAdmin: false }
+    },
+    {
       path: '/login',
       name: "login",
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../views/loginView.vue'),
       meta: { requiresAuth: true, onlyAdmin: false }
     },
     {
@@ -50,6 +56,12 @@ const router = createRouter({
       path: '/transfers',
       name: "transfers",
       component: () => import('../views/TransfersView.vue'),
+      meta: { requiresAuth: true, onlyAdmin: true }
+    },
+    {
+      path: '/rop',
+      name: 'rop',
+      component: () => import('../views/ROPView.vue'),
       meta: { requiresAuth: true, onlyAdmin: true }
     },
     {

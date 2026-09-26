@@ -75,8 +75,11 @@ async function upsertBonusDataByUsers(date) {
             console.log('bonuses cron script не запущен в суботу !!! о не забьет даные', nowDate, dayOfEndWeek)
         }
 
+        return true
+
     } catch (e) {
         console.log(`ошибка в кроне для обновления бонусов ${e.message}`)
+        return e.message
     }
 }
 
@@ -85,7 +88,7 @@ function setBonusesDataCron() {
     const cronMinute = '*/15 * * * *'
     const cronExpression = '*/5 * * * *'
 
-    upsertBonusDataByUsers(new Date('2026-07-11'))
+    upsertBonusDataByUsers(new Date())
   
     crone.schedule(cronHour, () => {
         upsertBonusDataByUsers(new Date())
